@@ -3,73 +3,54 @@ package Library
 import "fmt"
 
 type Book struct {
-    ID         string
-    Title      string
-    Author     string
-    IsBorrowed bool
+	ID         string
+	Title      string
+	Author     string
+	IsBorrowed bool
 }
 
 type Library struct {
-    Collection map[string]Book
+	Collection map[string]Book
 }
 
+// NewLibrary создаёт новый экземпляр Library
 func NewLibrary() *Library {
-    return &Library{Collection: make(map[string]Book)}
+	return &Library{Collection: make(map[string]Book)}
 }
 
-// AddBook добавляет новую книгу в коллекцию.
-// Если книга с таким ID уже существует, она будет перезаписана.
+// AddBook добавляет новую книгу
 func (l *Library) AddBook(book Book) {
-    l.Collection[book.ID] = book
+	l.Collection[book.ID] = book
+	fmt.Println("Книга добавлена:", book.Title)
 }
 
-// BorrowBook устанавливает IsBorrowed = true для книги с данным ID.
-// Если книги нет или она уже заимствована, выведем сообщение об ошибке.
+// BorrowBook заимствует книгу по ID
 func (l *Library) BorrowBook(id string) {
-    book, exists := l.Collection[id]
-    if !exists {
-        fmt.Println("Книга с таким ID не найдена!")
-        return
-    }
-    if book.IsBorrowed {
-        fmt.Println("Книга уже заимствована.")
-        return
-    }
-    book.IsBorrowed = true
-    l.Collection[id] = book
-    fmt.Println("Книга заимствована.")
+	if book, exists := l.Collection[id]; exists && !book.IsBorrowed {
+		book.IsBorrowed = true
+		l.Collection[id] = book
+		fmt.Println("Книга заимствована:", book.Title)
+	} else {
+		fmt.Println("Книга не найдена или уже заимствована.")
+	}
 }
 
-// ReturnBook устанавливает IsBorrowed = false для книги с данным ID.
-// Если книги нет или она не была заимствована, выведем сообщение.
+// ReturnBook возвращает книгу по ID
 func (l *Library) ReturnBook(id string) {
-    book, exists := l.Collection[id]
-    if !exists {
-        fmt.Println("Книга с таким ID не найдена!")
-        return
-    }
-    if !book.IsBorrowed {
-        fmt.Println("Книга и так была доступна.")
-        return
-    }
-    book.IsBorrowed = false
-    l.Collection[id] = book
-    fmt.Println("Книга возвращена.")
+	if book, exists := l.Collection[id]; exists && book.IsBorrowed {
+		book.IsBorrowed = false
+		l.Collection[id] = book
+		fmt.Println("Книга возвращена:", book.Title)
+	} else {
+		fmt.Println("Книга не найдена или уже доступна.")
+	}
 }
 
-// ListBooks выводит список всех книг.
-// Если хотите отфильтровать только доступные книги, можно проверять IsBorrowed.
+// ListBooks выводит список доступных книг
 func (l *Library) ListBooks() {
-    if len(l.Collection) == 0 {
-        fmt.Println("Нет книг в библиотеке.")
-        return
-    }
-    for _, book := range l.Collection {
-        status := "Доступна"
-        if book.IsBorrowed {
-            status = "Заимствована"
-        }
-        fmt.Printf("ID: %s, Название: %s, Автор: %s, Статус: %s\n",
-            book.ID, book.Title, book.Author, status)
-    }
+	for _, book := range l.Collection {
+		if !book.IsBorrowed {
+			fmt.Printf("ID: %s, Название: %s, Автор: %s\n", book.ID, book.Title, book.Author)
+		}
+	}
 }

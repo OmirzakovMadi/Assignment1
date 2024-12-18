@@ -1,80 +1,58 @@
 package main
 
 import (
-    "bufio"
-    "fmt"
-    "os"
-    "strings"
+	"bufio"
+	"fmt"
+	"os"
+	"strings"
 
-    "github.com/OmirzakovMadi/Assignment1/Library"
+	"github.com/OmirzakovMadi/Assignment1/Library"
 )
 
 func main() {
-    lib := Library.NewLibrary()
-    reader := bufio.NewReader(os.Stdin)
+	lib := Library.NewLibrary()
+	scanner := bufio.NewScanner(os.Stdin)
 
-    for {
-        fmt.Println("\nВыберите действие:")
-        fmt.Println("1. Add (Добавить книгу)")
-        fmt.Println("2. Borrow (Заимствовать книгу)")
-        fmt.Println("3. Return (Вернуть книгу)")
-        fmt.Println("4. List (Список всех книг)")
-        fmt.Println("5. Exit (Выйти)")
-        fmt.Print("Введите номер операции: ")
+	for {
+		fmt.Println("\nВыберите команду:")
+		fmt.Println("1. Add - Добавить книгу")
+		fmt.Println("2. Borrow - Заимствовать книгу")
+		fmt.Println("3. Return - Вернуть книгу")
+		fmt.Println("4. List - Показать доступные книги")
+		fmt.Println("5. Exit - Выйти из программы")
 
-        input, _ := reader.ReadString('\n')
-        input = strings.TrimSpace(input)
+		scanner.Scan()
+		command := strings.TrimSpace(scanner.Text())
 
-        switch input {
-        case "1":
-            // Добавление книги
-            fmt.Print("Введите ID книги: ")
-            id, _ := reader.ReadString('\n')
-            id = strings.TrimSpace(id)
+		switch command {
+		case "Add":
+			var id, title, author string
+			fmt.Print("Введите ID: ")
+			fmt.Scanln(&id)
+			fmt.Print("Введите название: ")
+			fmt.Scanln(&title)
+			fmt.Print("Введите автора: ")
+			fmt.Scanln(&author)
 
-            fmt.Print("Введите название книги: ")
-            title, _ := reader.ReadString('\n')
-            title = strings.TrimSpace(title)
-
-            fmt.Print("Введите автора книги: ")
-            author, _ := reader.ReadString('\n')
-            author = strings.TrimSpace(author)
-
-            // По умолчанию IsBorrowed = false при добавлении
-            book := Library.Book{
-                ID:         id,
-                Title:      title,
-                Author:     author,
-                IsBorrowed: false,
-            }
-            lib.AddBook(book)
-            fmt.Println("Книга добавлена.")
-
-        case "2":
-            // Заимствование книги
-            fmt.Print("Введите ID книги для заимствования: ")
-            id, _ := reader.ReadString('\n')
-            id = strings.TrimSpace(id)
-            lib.BorrowBook(id)
-
-        case "3":
-            // Возврат книги
-            fmt.Print("Введите ID книги для возврата: ")
-            id, _ := reader.ReadString('\n')
-            id = strings.TrimSpace(id)
-            lib.ReturnBook(id)
-
-        case "4":
-            // Список всех книг
-            lib.ListBooks()
-
-        case "5":
-            // Выход
-            fmt.Println("Программа завершена.")
-            return
-
-        default:
-            fmt.Println("Неверный выбор. Попробуйте еще раз.")
-        }
-    }
+			lib.AddBook(Library.Book{ID: id, Title: title, Author: author, IsBorrowed: false})
+		case "Borrow":
+			var id string
+			fmt.Print("Введите ID книги для заимствования: ")
+			fmt.Scanln(&id)
+			lib.BorrowBook(id)
+		case "Return":
+			var id string
+			fmt.Print("Введите ID книги для возврата: ")
+			fmt.Scanln(&id)
+			lib.ReturnBook(id)
+		case "List":
+			fmt.Println("Доступные книги:")
+			lib.ListBooks()
+		case "Exit":
+			fmt.Println("Завершение программы...")
+			return
+		default:
+			fmt.Println("Неизвестная команда. Попробуйте ещё раз.")
+		}
+	}
 }
